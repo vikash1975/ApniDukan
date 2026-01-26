@@ -39,7 +39,7 @@ export const addProduct = async (req, res) => {
 
     res.status(201).json({
       message: "Product added successfully",
-      product,
+       product
     });
 
   } catch (error) {

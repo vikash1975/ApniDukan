@@ -1,30 +1,36 @@
 import Admin from "../models/Admin.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-export const signupAdmin=async(req,res)=>{
-    try {
-        const {name,email,password,adminSecret}=req.body;
-        if(!name || !email || !password || !adminSecret){
-            return res.status(401).json({message:"All fields are required"})
-        }
 
-        if(adminSecret !==process.env.ADMIN_SECRET){
-            return res.status(402).json({message:"Invalid Admin secret"})
-        }
 
-        const adminCount=await Admin.countDocuments();
-        if(adminCount > 0){
-            return res.status(403).json({message:"Admin already exists"})
-        }
 
-        const existingAdmin=await Admin.findOne({email});
-         if (existingAdmin) {
+
+export const signupAdmin = async (req, res) => {
+  try {
+    const { name, email, password, adminSecret } = req.body;
+
+    if (!name || !email || !password || !adminSecret) {
+      return res.status(401).json({ message: "All fields are required" });
+    }
+
+    console.log("ENV SECRET:", process.env.ADMIN_SECRET);
+    console.log("BODY SECRET:", adminSecret);
+
+    if (adminSecret.trim() !== process.env.ADMIN_SECRET.trim()) {
+      return res.status(402).json({ message: "Invalid Admin secret" });
+    }
+
+    const adminCount = await Admin.countDocuments();
+    if (adminCount > 0) {
+      return res.status(403).json({ message: "Admin already exists" });
+    }
+
+    const existingAdmin = await Admin.findOne({ email });
+    if (existingAdmin) {
       return res.status(405).json({ message: "Admin already exists" });
     }
 
-       const hashedPassword = await bcrypt.hash(password, 10);
-
-    console.log("Creating admin with:", { name, email, role: "admin" });
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const admin = await Admin.create({
       name,
@@ -33,13 +39,10 @@ export const signupAdmin=async(req,res)=>{
       role: "admin"
     });
 
-    console.log("Admin created:", admin);
-
-    // Generate JWT token
     const token = jwt.sign(
-      { adminId: admin._id, role: 'admin', email: admin.email },
+      { adminId: admin._id, role: "admin" },
       process.env.JWT_SECRET,
-      { expiresIn: '24h' }
+      { expiresIn: "24h" }
     );
 
     res.status(201).json({
@@ -51,15 +54,12 @@ export const signupAdmin=async(req,res)=>{
         name: admin.name
       }
     });
-      
 
-
-    } catch (error) {
-         console.log("Admin signup error:", error.message);
-         console.log("Full error:", error);
-    res.status(500).json({ message: "Server error", error: error.message });
-    }
-}
+  } catch (error) {
+    console.log("Admin signup error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
 
 
 

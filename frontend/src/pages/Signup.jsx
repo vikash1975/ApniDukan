@@ -33,7 +33,7 @@ function Signup() {
 
     try {
       await signup(name, email, password);
-      navigate('/products');
+      navigate('/login');
     } catch (err) {
       setErrorMsg(err.response?.data?.message || 'Signup failed');
     }

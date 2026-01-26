@@ -218,12 +218,14 @@ function AdminDashboard() {
             </div>
 
             <div className="form-actions">
+
+               <button type="button" className="cancel-btn" onClick={handleCancel}>
+                Cancel
+              </button>
               <button type="submit" className="submit-btn">
                 {editingId ? 'Update Product' : 'Add Product'}
               </button>
-              <button type="button" className="cancel-btn" onClick={handleCancel}>
-                Cancel
-              </button>
+             
             </div>
           </form>
         </div>

@@ -11,3 +11,5 @@ router.post('/process', userAuth.userAuth, paymentController.processPayment);
 router.get('/:orderId', userAuth.userAuth, paymentController.getPaymentStatus);
 
 export default router;
+
+
