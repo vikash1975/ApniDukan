@@ -21,8 +21,8 @@ export const getAllProducts = () => API.get('/products');
 
 export const getProductById = (id) => API.get(`/products/${id}`);
 
-export const getFilteredProducts = (params) => 
-  API.get('/product', { params });
+export const getFilteredProducts = (params) =>
+  API.get('/products', { params });
 
 // ==================== USERS ====================
 export const userSignup = (data) => API.post('/users/signup', data);
