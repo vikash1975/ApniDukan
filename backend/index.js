@@ -52,8 +52,12 @@ app.use("/api/razorpay", razorpayRoutes);
  .then(()=>console.log("MongoDB is connected"))
  .catch((err)=>console.log(err));
 
-app.get("/", (req, res) => {
+app.get("/test", (req, res) => {
   res.json({ message: "SERVER WORKING" });
+});
+
+app.get("/", (req, res) => {
+  res.send("API is running 🚀");
 });
 
 // Health check endpoint for monitoring
