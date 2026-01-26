@@ -12,7 +12,7 @@ function ProductList() {
   const [error, setError] = useState(null);
 
   // Filter states
-  const [category, setCategory] = useState('');
+  const [category, setCategory] = useState([]);
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
   const [search, setSearch] = useState('');
