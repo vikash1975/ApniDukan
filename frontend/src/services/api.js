@@ -4,7 +4,7 @@ import axios from 'axios';
 // Uses environment variable VITE_API_URL if available, otherwise falls back to localhost
 const API = axios.create({
   // baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
-   baseURL: 'https://apnidukan-backend-tb6e.onrender.com',
+   baseURL: 'https://apnidukan-backend-tb6e.onrender.com/api',
 });
 
 // Add token to requests if exists
