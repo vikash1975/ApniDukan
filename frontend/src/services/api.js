@@ -22,7 +22,7 @@ export const getAllProducts = () => API.get('/products');
 export const getProductById = (id) => API.get(`/products/${id}`);
 
 export const getFilteredProducts = (params) =>
-  API.get('/products', { params });
+  API.get('/product', { params });
 
 // ==================== USERS ====================
 export const userSignup = (data) => API.post('/users/signup', data);
