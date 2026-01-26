@@ -22,8 +22,11 @@ const corsOptions = {
   origin: [
     'http://localhost:5173',           // Local development
     'http://localhost:3000',           // Local development
-    'https://apnidukan.netlify.app',   // Production (update with your actual URL)
-    'https://apnidukan.vercel.app',    // Alternative frontend URL
+    // 'https://apnidukan.netlify.app', 
+    // Production (update with your actual URL)
+    'https://apnidukan-frontend.onrender.com',
+    'https://apnidukan-backend-tb6e.onrender.com',
+    // 'https://apnidukan.vercel.app',    // Alternative frontend URL
   ],
   credentials: true,
   optionsSuccessStatus: 200
@@ -63,9 +66,6 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-app.get("/", (req, res) => {
-  res.send("API is running 🚀");
-});
  
 
  const PORT = process.env.PORT || 5000;
