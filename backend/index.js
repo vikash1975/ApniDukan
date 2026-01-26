@@ -62,6 +62,10 @@ app.get("/api/health", (req, res) => {
     uptime: process.uptime()
   });
 });
+
+app.get("/", (req, res) => {
+  res.send("API is running 🚀");
+});
  
 
  const PORT = process.env.PORT || 5000;
