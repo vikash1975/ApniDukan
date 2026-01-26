@@ -13,9 +13,13 @@ export const getFilteredProducts = async (req, res) => {
     let query = {};
 
     if (category) {
-      query.category = { $regex: `^${category}$`, $options: "i" };
-      console.log("Category filter applied:", query.category);
-    }
+  if (Array.isArray(category)) {
+    query.category = { $in: category };
+  } else {
+    query.category = { $regex: `^${category}$`, $options: "i" };
+  }
+}
+
 
     if (minPrice || maxPrice) {
       query.price = {};
