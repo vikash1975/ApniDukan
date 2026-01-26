@@ -52,7 +52,7 @@ app.use("/api/razorpay", razorpayRoutes);
  .then(()=>console.log("MongoDB is connected"))
  .catch((err)=>console.log(err));
 
-app.get("/test", (req, res) => {
+app.get("/", (req, res) => {
   res.json({ message: "SERVER WORKING" });
 });
 
