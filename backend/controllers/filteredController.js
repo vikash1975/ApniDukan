@@ -9,15 +9,14 @@ export const getFilteredProducts = async (req, res) => {
     let query = {};
 
     //  CATEGORY (case-insensitive + array safe)
-   if (category) {
-      const categories = Array.isArray(category) ? category : [category];
+if (category) {
+  const categories = category.split(',');
 
-      query.category = {
-        $in: categories.map(
-          (c) => new RegExp(`^${c}$`, "i")
-        ),
-      };
-    }
+  query.category = {
+    $in: categories.map(c => new RegExp(`^${c}$`, 'i'))
+  };
+}
+
 
     //  PRICE
     if (minPrice || maxPrice) {
