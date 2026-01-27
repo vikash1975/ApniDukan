@@ -45,26 +45,30 @@ function ProductList() {
     setLoading(true);
     setError(null);
 
-    try {
-      const params = {};
+    const fetchProducts = async () => {
+  setLoading(true);
+  setError(null);
 
-      //  Convert category to lowercase before sending
-      if (category.length > 0) {
-        params.category = category.map((c) => c.toLowerCase());
-      }
+  try {
+    const params = {};
 
-      if (debouncedMin) params.minPrice = debouncedMin;
-      if (debouncedMax) params.maxPrice = debouncedMax;
-      if (debouncedSearch) params.search = debouncedSearch;
-
-      const response = await getFilteredProducts(params);
-      setProducts(response.data);
-    } catch (err) {
-      setError(err.response?.data?.message || 'Failed to fetch products');
-    } finally {
-      setLoading(false);
+    if (category.length > 0) {
+      params.category = category.join(','); // 🔥 FIX
     }
-  };
+
+    if (debouncedMin) params.minPrice = debouncedMin;
+    if (debouncedMax) params.maxPrice = debouncedMax;
+    if (debouncedSearch) params.search = debouncedSearch;
+
+    const response = await getFilteredProducts(params);
+    setProducts(response.data);
+  } catch (err) {
+    setError(err.response?.data?.message || 'Failed to fetch products');
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => {
     fetchProducts();
