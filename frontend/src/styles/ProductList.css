@@ -90,6 +90,7 @@
 
 .chip-close {
   background: none;
+  background-color:red;
   border: none;
   color: #27ae60;
   font-size: 1.3rem;
