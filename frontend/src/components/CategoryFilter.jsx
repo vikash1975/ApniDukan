@@ -4,14 +4,14 @@ import { useState } from 'react';
 import '../styles/Filters.css';
 
 const CATEGORIES = [
-  'electronics',
-  'fashion',
-  'home',
-  'sports',
-  'books',
-  'toys',
-  'beauty',
-  'food',
+  'Electronics',
+  'Fashion',
+  'Home',
+  'Sports',
+  'Books',
+  'Toys',
+  'Beauty',
+  'Food',
 ];
 
 function CategoryFilter({ value = [], onChange }) {
