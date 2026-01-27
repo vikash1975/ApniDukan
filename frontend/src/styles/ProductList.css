@@ -89,7 +89,6 @@
 }
 
 .chip-close {
-  background: none;
   background-color:red;
   border: none;
   color: #27ae60;
@@ -104,7 +103,7 @@
 }
 
 .chip-close:hover {
-  color: #ff6b6b;
+  color: brown;
   transform: scale(1.2);
 }
 
