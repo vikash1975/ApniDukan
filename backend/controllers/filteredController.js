@@ -53,14 +53,18 @@ export const getFilteredProducts = async (req, res) => {
     let query = {};
 
     //  CATEGORY (case-insensitive + array safe)
-    if (category) {
-      const categories = Array.isArray(category)
-        ? category.map(c => c.toLowerCase())
-        : [category.toLowerCase()];
+  if (category) {
+      let categories = [];
+
+      // If category comes as "category[]=Electronics"
+      if (Array.isArray(category)) {
+        categories = category.map(c => c.toLowerCase());
+      } else {
+        categories = [category.toLowerCase()];
+      }
 
       query.category = { $in: categories };
     }
-
     //  PRICE
     if (minPrice || maxPrice) {
       query.price = {};
