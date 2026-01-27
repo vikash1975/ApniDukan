@@ -12,9 +12,13 @@ export const getFilteredProducts = async (req, res) => {
     let query = {};
 
     //  CATEGORY FIX
-  if (category && category.length > 0) {
+if (category) {
+  if (typeof category === "string") {
+    category = category.split(",");
+  }
   query.category = { $in: category };
 }
+
 
 
     //  PRICE
