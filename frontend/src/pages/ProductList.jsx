@@ -1,7 +1,3 @@
-
-
-
-
 import { useState, useEffect } from 'react';
 import { getFilteredProducts } from '../services/api';
 import ProductCard from '../components/ProductCard';
@@ -41,34 +37,30 @@ function ProductList() {
     return () => clearTimeout(timer);
   }, [maxPrice]);
 
+  //  SINGLE fetchProducts
   const fetchProducts = async () => {
     setLoading(true);
     setError(null);
 
-    const fetchProducts = async () => {
-  setLoading(true);
-  setError(null);
+    try {
+      const params = {};
 
-  try {
-    const params = {};
+      if (category.length > 0) {
+        params.category = category.join(','); // frontend → backend safe
+      }
 
-    if (category.length > 0) {
-      params.category = category.join(','); 
+      if (debouncedMin) params.minPrice = debouncedMin;
+      if (debouncedMax) params.maxPrice = debouncedMax;
+      if (debouncedSearch) params.search = debouncedSearch;
+
+      const response = await getFilteredProducts(params);
+      setProducts(response.data);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to fetch products');
+    } finally {
+      setLoading(false);
     }
-
-    if (debouncedMin) params.minPrice = debouncedMin;
-    if (debouncedMax) params.maxPrice = debouncedMax;
-    if (debouncedSearch) params.search = debouncedSearch;
-
-    const response = await getFilteredProducts(params);
-    setProducts(response.data);
-  } catch (err) {
-    setError(err.response?.data?.message || 'Failed to fetch products');
-  } finally {
-    setLoading(false);
-  }
-};
-
+  };
 
   useEffect(() => {
     fetchProducts();
@@ -121,4 +113,5 @@ function ProductList() {
 }
 
 export default ProductList;
+
 
