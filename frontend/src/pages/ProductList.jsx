@@ -53,7 +53,7 @@ function ProductList() {
     const params = {};
 
     if (category.length > 0) {
-      params.category = category.join(','); // 🔥 FIX
+      params.category = category.join(','); 
     }
 
     if (debouncedMin) params.minPrice = debouncedMin;
