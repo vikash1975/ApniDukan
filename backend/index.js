@@ -24,6 +24,7 @@ const corsOptions = {
     'http://localhost:5000',           // Local development
     'https://apnidukan.netlify.app',   // Production (update with your actual URL)
     'https://apnidukan.vercel.app',    // Alternative frontend URL
+    'https://apnidukan-frontend.onrender.com', // Your actual frontend URL
   ],
   credentials: true,
   optionsSuccessStatus: 200
