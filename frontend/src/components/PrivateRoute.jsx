@@ -1,19 +1,23 @@
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useSelector } from 'react-redux';
+import { selectIsAuthenticated, selectIsAdmin, selectLoading } from '../redux/authSlice';
 
 function PrivateRoute({ children, requiredRole }) {
-  const { isAuthenticated, isAdmin, isUserRole } = useAuth();
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const isAdmin = useSelector(selectIsAdmin);
+  const loading = useSelector(selectLoading);
 
-  if (!isAuthenticated) {
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  // Allow access to login/signup pages even when authenticated
+  if (!isAuthenticated && window.location.pathname !== '/login' && window.location.pathname !== '/signup') {
     return <Navigate to="/login" replace />;
   }
 
   if (requiredRole === 'admin' && !isAdmin) {
     return <Navigate to="/products" replace />;
-  }
-
-  if (requiredRole === 'user' && !isUserRole) {
-    return <Navigate to="/admin/login" replace />;
   }
 
   return children;

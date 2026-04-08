@@ -8,7 +8,7 @@ export const addProduct = async (req, res) => {
     const { name, price, category, stock, description } = req.body;
 
     if (!req.file) {
-      return res.status(400).json({ message: "Image is required" });
+      return res.status(400).json({ message:"Image is required" });
     }
 
     // 🔹 Upload image buffer to Cloudinary using upload_stream

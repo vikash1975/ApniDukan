@@ -1,19 +1,27 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getProductById, addToCart } from '../services/api';
+import { useDispatch } from 'react-redux';
+import { getProductById, getFilteredProducts } from '../services/api';
+import { addToCartAsync } from '../redux/cartSlice';
+import ProductCard from '../components/ProductCard';
 import '../styles/SingleProduct.css';
 
 function SingleProduct() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [product, setProduct] = useState(null);
+  const [relatedProducts, setRelatedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [addingToCart, setAddingToCart] = useState(false);
+  const [selectedSize, setSelectedSize] = useState('');
+  const [selectedColor, setSelectedColor] = useState('');
 
   useEffect(() => {
     fetchProduct();
+    fetchRelatedProducts();
   }, [id]);
 
   const fetchProduct = async () => {
@@ -30,6 +38,15 @@ function SingleProduct() {
     }
   };
 
+  const fetchRelatedProducts = async () => {
+    try {
+      const response = await getFilteredProducts({ limit: 4 });
+      setRelatedProducts(response.data.filter(p => p._id !== id));
+    } catch (err) {
+      console.error('Failed to fetch related products:', err);
+    }
+  };
+
   const handleAddToCart = async () => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -40,15 +57,23 @@ function SingleProduct() {
 
     setAddingToCart(true);
     try {
-      await addToCart({
+      console.log('=== SINGLE PRODUCT: ADD TO CART START ===');
+      console.log('Product ID:', product._id);
+      console.log('Quantity:', parseInt(quantity));
+      console.log('Dispatching addToCartAsync...');
+      
+      const result = await dispatch(addToCartAsync({
         productId: product._id,
         quantity: parseInt(quantity),
-      });
-      alert('Added to cart!');
-      setQuantity(1);
-    } catch (err) {
-      console.error(err);
-      alert(err.response?.data?.message || 'Failed to add to cart');
+      })).unwrap();
+      
+      console.log('=== SINGLE PRODUCT: ADD TO CART SUCCESS ===');
+      console.log('Dispatch result:', result);
+      alert('Product added to cart!');
+    } catch (error) {
+      console.error('=== SINGLE PRODUCT: ADD TO CART ERROR ===');
+      console.error('Error:', error);
+      alert('Failed to add to cart');
     } finally {
       setAddingToCart(false);
     }
@@ -67,28 +92,56 @@ function SingleProduct() {
 
   return (
     <div className="single-product-container">
-      <button className="back-btn" onClick={() => navigate(-1)}>
-        ← Back
-      </button>
-
       <div className="single-product">
         <div className="product-image-section">
           <img src={product.image} alt={product.name} className="product-image" />
         </div>
 
         <div className="product-details-section">
-          <h1>{product.name}</h1>
+          <h1 className="product-title">{product.name}</h1>
           <p className="category-badge">{product.category}</p>
 
           <div className="price-section">
-            <span className="price">₹{product.price}</span>
+            <span className="price">Rs. {product.price}</span>
             <span className={`stock ${product.stock > 0 ? 'in-stock' : 'out-of-stock'}`}>
               {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
             </span>
           </div>
 
+          <div className="options-section">
+            <div className="size-selector">
+              <h3>SIZE</h3>
+              <div className="size-options">
+                {['XS', 'S', 'M', 'L', 'XL', 'XXL'].map(size => (
+                  <button
+                    key={size}
+                    className={`size-btn ${selectedSize === size ? 'selected' : ''}`}
+                    onClick={() => setSelectedSize(size)}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="color-selector">
+              <h3>COLOR</h3>
+              <div className="color-options">
+                {['Black', 'White', 'Green', 'Blue', 'Red'].map(color => (
+                  <button
+                    key={color}
+                    className={`color-btn ${selectedColor === color ? 'selected' : ''}`}
+                    onClick={() => setSelectedColor(color)}
+                  >
+                    {color}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
           <div className="description">
-            <h3>Description</h3>
+            <h3>DESCRIPTION</h3>
             <p>{product.description}</p>
           </div>
 
@@ -102,7 +155,7 @@ function SingleProduct() {
                   onChange={handleQuantityChange}
                   disabled={addingToCart}
                 >
-                  {[...Array(product.stock)].map((_, i) => (
+                  {[...Array(Math.min(product.stock, 10))].map((_, i) => (
                     <option key={i + 1} value={i + 1}>
                       {i + 1}
                     </option>
@@ -115,7 +168,7 @@ function SingleProduct() {
                 onClick={handleAddToCart}
                 disabled={addingToCart}
               >
-                {addingToCart ? 'Adding...' : 'Add to Cart'}
+                {addingToCart ? 'Adding...' : 'ADD TO CART'}
               </button>
             </div>
           )}
@@ -125,6 +178,18 @@ function SingleProduct() {
           )}
         </div>
       </div>
+
+      {/* Related Products Section */}
+      {relatedProducts.length > 0 && (
+        <section className="related-products-section">
+          <h2 className="related-title">You might like these</h2>
+          <div className="related-products-grid">
+            {relatedProducts.map((relatedProduct) => (
+              <ProductCard key={relatedProduct._id} product={relatedProduct} />
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

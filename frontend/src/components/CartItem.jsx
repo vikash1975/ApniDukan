@@ -1,15 +1,22 @@
-import { useContext } from 'react';
-import { CartContext } from '../context/CartContext';
+import { useDispatch } from 'react-redux';
+import { removeFromCartAsync, updateQuantityAsync } from '../redux/cartSlice';
 import '../styles/CartItem.css';
 
 function CartItem({ item }) {
-  const { removeItem, updateQuantity } = useContext(CartContext);
+  const dispatch = useDispatch();
 
   const handleRemove = async () => {
     try {
-      await removeItem(item.productId._id);
+      console.log('=== CART ITEM REMOVE DEBUG ===');
+      console.log('Item being removed:', item);
+      console.log('Product ID being removed:', item.productId._id);
+      console.log('Product name:', item.productId.name);
+      
+      await dispatch(removeFromCartAsync(item.productId._id)).unwrap();
+      
+      console.log('Remove operation completed');
     } catch (err) {
-      console.error(err);
+      console.error('Remove error:', err);
     }
   };
 
@@ -17,9 +24,12 @@ function CartItem({ item }) {
     const newQuantity = parseInt(e.target.value);
     if (newQuantity > 0) {
       try {
-        await updateQuantity(item.productId._id, newQuantity);
+        await dispatch(updateQuantityAsync({ 
+          productId: item.productId._id, 
+          quantity: newQuantity 
+        })).unwrap();
       } catch (err) {
-        console.error(err);
+        console.error('Update quantity error:', err);
       }
     }
   };
@@ -31,16 +41,16 @@ function CartItem({ item }) {
       <div className="item-image">
         <img src={item.productId.image} alt={item.productId.name} />
       </div>
-
+      
       <div className="item-details">
         <h3>{item.productId.name}</h3>
         <p className="item-category">{item.productId.category}</p>
       </div>
-
+      
       <div className="item-price">
         <span>₹{item.price}</span>
       </div>
-
+      
       <div className="item-quantity">
         <select value={item.quantity} onChange={handleQuantityChange}>
           {[...Array(item.productId.stock)].map((_, i) => (
@@ -50,11 +60,11 @@ function CartItem({ item }) {
           ))}
         </select>
       </div>
-
+      
       <div className="item-subtotal">
         <span>₹{subtotal.toFixed(2)}</span>
       </div>
-
+      
       <div className="item-actions">
         <button className="remove-btn" onClick={handleRemove}>
           Remove

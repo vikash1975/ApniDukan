@@ -5,6 +5,8 @@
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 20px;
+  position: relative;
+  z-index: 1;
 }
 
 .auth-card {
@@ -14,6 +16,9 @@
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
   width: 100%;
   max-width: 400px;
+  position: relative;
+  z-index: 2;
+  border: 2px solid #fff;
 }
 
 .auth-card.admin-card {
@@ -25,6 +30,7 @@
   color: #333;
   margin-bottom: 10px;
   font-size: 1.8rem;
+  font-weight: 700;
 }
 
 .admin-subtitle {
@@ -54,12 +60,13 @@
 
 .form-group input {
   padding: 12px;
-  border: 1px solid #ddd;
+  border: 2px solid #ddd;
   background-color: white;
   color: black;
   border-radius: 5px;
   font-size: 1rem;
   transition: border-color 0.3s;
+  min-height: 44px;
 }
 
 .form-group input:focus {
@@ -80,6 +87,7 @@
   border-radius: 5px;
   font-size: 0.9rem;
   border-left: 4px solid #c62828;
+  margin: 10px 0;
 }
 
 .auth-btn {
@@ -92,6 +100,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: background 0.3s;
+  min-height: 44px;
 }
 
 .auth-btn:hover:not(:disabled) {
@@ -105,6 +114,7 @@
 
 .auth-btn.admin-btn {
   background: #ff6b6b;
+  color: white;
 }
 
 .auth-btn.admin-btn:hover:not(:disabled) {
@@ -132,6 +142,7 @@
 @media (max-width: 480px) {
   .auth-card {
     padding: 25px;
+    margin: 10px;
   }
 
   .auth-card h1 {

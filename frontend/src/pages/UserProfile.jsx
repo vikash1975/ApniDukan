@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useSelector } from 'react-redux';
+import { selectUser } from '../redux/authSlice';
 import { getUserOrders } from '../services/api';
 import '../styles/UserProfile.css';
 
 function UserProfile() {
-  const { user } = useAuth();
+  const user = useSelector(selectUser);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  console.log(user);
 
   useEffect(() => {
     fetchOrders();
@@ -49,7 +52,7 @@ function UserProfile() {
           <div className="info-card">
             <div className="info-row">
               <span className="label">Name:</span>
-              <span className="value">{user?.name || 'Not provided'}</span>
+              <span className="value">{user?.name}</span>
             </div>
             <div className="info-row">
               <span className="label">Email:</span>

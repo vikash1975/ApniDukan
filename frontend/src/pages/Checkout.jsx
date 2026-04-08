@@ -1,14 +1,26 @@
-import { useState, useContext, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CartContext } from '../context/CartContext';
+import { useSelector, useDispatch } from 'react-redux';
 import { checkout, createRazorpayOrder, verifyRazorpayPayment, handleRazorpayFailure, getRazorpayKey } from '../services/api';
+import { fetchCartAsync } from '../redux/cartSlice';
 import '../styles/Checkout.css';
 
 function Checkout() {
   const navigate = useNavigate();
-  const { cart, getTotal } = useContext(CartContext);
+  const dispatch = useDispatch();
+  
+  // Use Redux state instead of Context
+  const cart = useSelector((state) => state.cart.cart);
+  const loading = useSelector((state) => state.cart.loading);
+  
+  // Calculate total using Redux state
+  const getTotal = () => {
+    if (!cart || !cart.items) return 0;
+    return cart.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  };
+  
   const [address, setAddress] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [error, setError] = useState(null);
   const [step, setStep] = useState('address'); // 'address' or 'payment'
   const [currentOrder, setCurrentOrder] = useState(null);
@@ -22,8 +34,21 @@ function Checkout() {
     script.src = 'https://checkout.razorpay.com/v1/checkout.js';
     script.async = true;
     document.body.appendChild(script);
+
     return () => document.body.removeChild(script);
   }, []);
+
+  useEffect(() => {
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+    
+    // Fetch cart if not loaded
+    if (!cart && !loading) {
+      dispatch(fetchCartAsync());
+    }
+  }, [token, cart, loading, dispatch]);
 
   if (!token) {
     return (
@@ -64,7 +89,7 @@ function Checkout() {
       return;
     }
 
-    setLoading(true);
+    setCheckoutLoading(true);
     try {
       const response = await checkout({ shippingAddress: address });
       setCurrentOrder(response.data.order);
@@ -72,14 +97,14 @@ function Checkout() {
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to create order');
     } finally {
-      setLoading(false);
+      setCheckoutLoading(false);
     }
   };
 
   const handlePayment = async (e) => {
     e.preventDefault();
     setError(null);
-    setLoading(true);
+    setCheckoutLoading(true);
 
     try {
       // Step 1: Get Razorpay Key
@@ -122,7 +147,7 @@ function Checkout() {
             setStep('address');
             setCurrentOrder(null);
           } finally {
-            setLoading(false);
+            setCheckoutLoading(false);
           }
         },
         prefill: {
@@ -144,7 +169,7 @@ function Checkout() {
             } catch (err) {
               console.error('Error handling payment dismissal:', err);
             }
-            setLoading(false);
+            setCheckoutLoading(false);
           },
         },
       };
@@ -153,7 +178,7 @@ function Checkout() {
       razorpayWindow.open();
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to initiate payment');
-      setLoading(false);
+      setCheckoutLoading(false);
     }
   };
 
@@ -188,7 +213,7 @@ function Checkout() {
                   onChange={(e) => setAddress(e.target.value)}
                   placeholder="Enter your full delivery address (street, city, state, zip code)"
                   rows="4"
-                  disabled={loading}
+                  disabled={checkoutLoading}
                   required
                 ></textarea>
               </div>
@@ -198,9 +223,9 @@ function Checkout() {
               <button 
                 type="submit" 
                 className="continue-btn"
-                disabled={loading}
+                disabled={checkoutLoading}
               >
-                {loading ? 'Processing...' : 'Continue to Payment'}
+                {checkoutLoading ? 'Processing...' : 'Continue to Payment'}
               </button>
             </form>
           </div>
@@ -217,9 +242,9 @@ function Checkout() {
                       value="razorpay"
                       checked={paymentMethod === 'razorpay'}
                       onChange={(e) => setPaymentMethod(e.target.value)}
-                      disabled={loading}
+                      disabled={checkoutLoading}
                     />
-                    <span>💳 Razorpay (Credit/Debit Card)</span>
+                    <span>£ Razorpay (Credit/Debit Card)</span>
                   </label>
                   <label className="payment-method">
                     <input
@@ -227,9 +252,9 @@ function Checkout() {
                       value="razorpay-upi"
                       checked={paymentMethod === 'razorpay-upi'}
                       onChange={(e) => setPaymentMethod(e.target.value)}
-                      disabled={loading}
+                      disabled={checkoutLoading}
                     />
-                    <span>📱 Razorpay (UPI)</span>
+                    <span>£ Razorpay (UPI)</span>
                   </label>
                   <label className="payment-method">
                     <input
@@ -237,9 +262,9 @@ function Checkout() {
                       value="razorpay-wallet"
                       checked={paymentMethod === 'razorpay-wallet'}
                       onChange={(e) => setPaymentMethod(e.target.value)}
-                      disabled={loading}
+                      disabled={checkoutLoading}
                     />
-                    <span>👛 Razorpay (Wallet)</span>
+                    <span>£ Razorpay (Wallet)</span>
                   </label>
                 </div>
               </div>
@@ -259,16 +284,16 @@ function Checkout() {
                     setStep('address');
                     setCurrentOrder(null);
                   }}
-                  disabled={loading}
+                  disabled={checkoutLoading}
                 >
                   Back to Address
                 </button>
                 <button 
                   type="submit" 
                   className="pay-now-btn"
-                  disabled={loading}
+                  disabled={checkoutLoading}
                 >
-                  {loading ? 'Processing...' : `Pay Now ₹${finalTotal.toFixed(2)}`}
+                  {checkoutLoading ? 'Processing...' : `Pay Now ₹${finalTotal.toFixed(2)}`}
                 </button>
               </div>
             </form>

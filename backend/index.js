@@ -21,7 +21,7 @@ const app=express();
 const corsOptions = {
   origin: [
     'http://localhost:5173',           // Local development
-    'http://localhost:3000',           // Local development
+    'http://localhost:5000',           // Local development
     'https://apnidukan.netlify.app',   // Production (update with your actual URL)
     'https://apnidukan.vercel.app',    // Alternative frontend URL
   ],

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useSelector, useDispatch } from 'react-redux';
+import { signupAdmin, selectLoading, selectError, clearError } from '../redux/authSlice';
 import '../styles/Auth.css';
 
 function AdminSignup() {
@@ -10,11 +11,14 @@ function AdminSignup() {
   const [adminSecret, setAdminSecret] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const navigate = useNavigate();
-  const { adminSignUp, loading } = useAuth();
+  const dispatch = useDispatch();
+  const loading = useSelector(selectLoading);
+  const authError = useSelector(selectError);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg('');
+    dispatch(clearError());
 
     if (!name || !email || !password || !adminSecret) {
       setErrorMsg('All fields are required');
@@ -27,10 +31,10 @@ function AdminSignup() {
     }
 
     try {
-      await adminSignUp(name, email, password, adminSecret);
+      await dispatch(signupAdmin({ name, email, password, adminSecret })).unwrap();
       navigate('/admin/login');
     } catch (err) {
-      setErrorMsg(err.response?.data?.message || 'Admin signup failed');
+      setErrorMsg(err);
     }
   };
 
@@ -88,7 +92,7 @@ function AdminSignup() {
             />
           </div>
 
-          {errorMsg && <div className="error-message">{errorMsg}</div>}
+          {(errorMsg || authError) && <div className="error-message">{errorMsg || authError}</div>}
 
           <button type="submit" className="auth-btn admin-btn" disabled={loading}>
             {loading ? 'Creating account...' : 'Admin Sign Up'}

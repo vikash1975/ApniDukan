@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useSelector, useDispatch } from 'react-redux';
+import { signupUser, selectLoading, selectError, clearError } from '../redux/authSlice';
 import '../styles/Auth.css';
 
 function Signup() {
@@ -10,11 +11,14 @@ function Signup() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const navigate = useNavigate();
-  const { signup, loading } = useAuth();
+  const dispatch = useDispatch();
+  const loading = useSelector(selectLoading);
+  const authError = useSelector(selectError);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg('');
+    dispatch(clearError());
 
     if (!name || !email || !password || !confirmPassword) {
       setErrorMsg('All fields are required');
@@ -32,10 +36,10 @@ function Signup() {
     }
 
     try {
-      await signup(name, email, password);
+      await dispatch(signupUser({ name, email, password })).unwrap();
       navigate('/login');
     } catch (err) {
-      setErrorMsg(err.response?.data?.message || 'Signup failed');
+      setErrorMsg(err);
     }
   };
 
@@ -92,7 +96,9 @@ function Signup() {
             />
           </div>
 
-          {errorMsg && <div className="error-message">{errorMsg}</div>}
+          {(errorMsg || authError) && (
+          <div className="error-message">{errorMsg || authError}</div>
+        )}
 
           <button type="submit" className="auth-btn" disabled={loading}>
             {loading ? 'Creating account...' : 'Sign Up'}

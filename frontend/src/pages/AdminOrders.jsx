@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useSelector } from 'react-redux';
+import { selectIsAdmin } from '../redux/authSlice';
 import { getAllOrders, updateOrderStatus } from '../services/api';
 import '../styles/AdminOrders.css';
 
 function AdminOrders() {
-  const { isAdmin } = useAuth();
+  const isAdmin = useSelector(selectIsAdmin);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);

@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useSelector } from 'react-redux';
+import { selectIsAdmin } from '../redux/authSlice';
 import { getAllProducts, addProduct, updateProduct, deleteProduct } from '../services/api';
 import '../styles/AdminDashboard.css';
 
 function AdminDashboard() {
-  const { isAdmin } = useAuth();
+  const isAdmin = useSelector(selectIsAdmin);
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);

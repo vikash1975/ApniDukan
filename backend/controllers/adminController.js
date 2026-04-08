@@ -14,8 +14,7 @@ export const signupAdmin = async (req, res) => {
       return res.status(401).json({ message: "All fields are required" });
     }
 
-    console.log("ENV SECRET:", process.env.ADMIN_SECRET);
-    console.log("BODY SECRET:", adminSecret);
+ 
 
     if (adminSecret.trim() !== process.env.ADMIN_SECRET.trim()) {
       return res.status(402).json({ message: "Invalid Admin secret" });
@@ -23,7 +22,7 @@ export const signupAdmin = async (req, res) => {
 
     const adminCount = await Admin.countDocuments();
     if (adminCount > 0) {
-      return res.status(403).json({ message: "Admin already exists" });
+      return res.status(403).json({ message:"Allow single admin only that is already exists." });
     }
 
     const existingAdmin = await Admin.findOne({ email });

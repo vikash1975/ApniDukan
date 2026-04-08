@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getAllProducts, getFilteredProducts } from '../services/api';
+import { getFilteredProducts } from '../services/api';
 import ProductCard from '../components/ProductCard';
 import CategoryFilter from '../components/CategoryFilter';
 import PriceFilter from '../components/PriceFilter';
@@ -11,68 +11,67 @@ function ProductList() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Filter states
-  const [category, setCategory] = useState('');
+  // Filters
+  const [category, setCategory] = useState([]);
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
   const [search, setSearch] = useState('');
 
-  // Fetch products with filters
+  // Debounce
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
+  const [debouncedMin, setDebouncedMin] = useState(minPrice);
+  const [debouncedMax, setDebouncedMax] = useState(maxPrice);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(search), 500);
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedMin(minPrice), 500);
+    return () => clearTimeout(timer);
+  }, [minPrice]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedMax(maxPrice), 500);
+    return () => clearTimeout(timer);
+  }, [maxPrice]);
+
+  //  SINGLE fetchProducts
   const fetchProducts = async () => {
     setLoading(true);
     setError(null);
+
     try {
-      // Build query params
       const params = {};
-      if (category) params.category = category;
-      if (minPrice) params.minPrice = minPrice;
-      if (maxPrice) params.maxPrice = maxPrice;
-      if (search) params.search = search;
+
+      if (category.length > 0) {
+        params.category = category.join(','); // frontend → backend safe
+      }
+
+      if (debouncedMin) params.minPrice = debouncedMin;
+      if (debouncedMax) params.maxPrice = debouncedMax;
+      if (debouncedSearch) params.search = debouncedSearch;
 
       const response = await getFilteredProducts(params);
       setProducts(response.data);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to fetch products');
-      console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
-  // Initial fetch
   useEffect(() => {
     fetchProducts();
-  }, []);
-
-  // Fetch when filters change
-  useEffect(() => {
-    if (category || minPrice || maxPrice || search) {
-      fetchProducts();
-    }
-  }, [category, minPrice, maxPrice, search]);
-
-  const handleCategoryChange = (cat) => {
-    setCategory(cat);
-  };
-
-  const handlePriceChange = (min, max) => {
-    setMinPrice(min);
-    setMaxPrice(max);
-  };
-
-  const handleSearchChange = (q) => {
-    setSearch(q);
-  };
+  }, [category, debouncedMin, debouncedMax, debouncedSearch]);
 
   const handleReset = () => {
-    setCategory('');
+    setCategory([]);
     setMinPrice('');
     setMaxPrice('');
     setSearch('');
   };
-
-  // Check if any filter is active
-  const hasActiveFilters = category || minPrice || maxPrice || search;
 
   return (
     <div className="product-list-container">
@@ -80,65 +79,20 @@ function ProductList() {
 
       <div className="filters-section">
         <div className="filters-grid">
-          <SearchFilter value={search} onChange={handleSearchChange} />
-          <CategoryFilter value={category} onChange={handleCategoryChange} />
-          <PriceFilter 
-            minPrice={minPrice} 
-            maxPrice={maxPrice} 
-            onChange={handlePriceChange} 
+          <SearchFilter value={search} onChange={setSearch} />
+          <CategoryFilter value={category} onChange={setCategory} />
+          <PriceFilter
+            minPrice={minPrice}
+            maxPrice={maxPrice}
+            onChange={(min, max) => {
+              setMinPrice(min);
+              setMaxPrice(max);
+            }}
           />
           <button className="reset-btn" onClick={handleReset}>
             🔄 Reset Filters
           </button>
         </div>
-
-        {/* Active Filters Display */}
-        {hasActiveFilters && (
-          <div className="active-filters">
-            <span className="filter-label-text">Active Filters:</span>
-            <div className="filter-chips">
-              {search && (
-                <div className="filter-chip">
-                  🔍 "{search}"
-                  <button 
-                    className="chip-close" 
-                    onClick={() => setSearch('')}
-                    title="Remove search filter"
-                  >
-                    ×
-                  </button>
-                </div>
-              )}
-              {category && (
-                <div className="filter-chip">
-                  📁 {category}
-                  <button 
-                    className="chip-close" 
-                    onClick={() => setCategory('')}
-                    title="Remove category filter"
-                  >
-                    ×
-                  </button>
-                </div>
-              )}
-              {(minPrice || maxPrice) && (
-                <div className="filter-chip">
-                  💰 ₹{minPrice || '0'} - ₹{maxPrice || '∞'}
-                  <button 
-                    className="chip-close" 
-                    onClick={() => {
-                      setMinPrice('');
-                      setMaxPrice('');
-                    }}
-                    title="Remove price filter"
-                  >
-                    ×
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
       </div>
 
       {error && <div className="error-message">{error}</div>}

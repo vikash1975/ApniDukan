@@ -12,7 +12,7 @@ export const signup=async(req,res)=>{
 
         const existingUser=await User.findOne({email});
         if(existingUser){
-            return res.status(401).json({message:"User already exists"})
+            return res.status(409).json({message:"User already exists"})
         }
          const hashPassword=await bcrypt.hash(password,10); 
 
@@ -51,10 +51,16 @@ export const login=async(req,res)=>{
            process.env.JWT_SECRET || "secretkey",
            {expiresIn:"1d"}
         )
-        res.status(200).json({message:"Login Successfully", token})
-    } catch (error) {
+res.status(200).json({message:"Login Successfully",
+  _id: user._id,
+  name: user.name,
+  email: user.email,
+  role: user.role,
+  token
+});
+
+}catch(error){
           console.error('User login error:', error.message);
-        res.status(401).json({message:"server error"})
-      
+        res.status(401).json({message:"server error"})     
     }
 }

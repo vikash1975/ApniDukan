@@ -1,10 +1,11 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
-import { CartProvider } from './context/CartContext';
+import { Provider } from 'react-redux';
+import store from './redux/store';
 import Navbar from './components/Navbar';
 import PrivateRoute from './components/PrivateRoute';
 
 // User Pages
+import Home from './pages/Home';
 import ProductList from './pages/ProductList';
 import SingleProduct from './pages/SingleProduct';
 import Cart from './pages/Cart';
@@ -19,18 +20,18 @@ import AdminLogin from './pages/AdminLogin';
 import AdminSignup from './pages/AdminSignup';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminOrders from './pages/AdminOrders';
+import AdminUsers from './pages/AdminUsers';
 
 import './App.css';
 
 function App() {
   return (
-    <AuthProvider>
-      <CartProvider>
-        <Router>
-          <Navbar />
-          <Routes>
+    <Provider store={store}>
+      <Router>
+        <Navbar />
+        <Routes>
             {/* Public routes */}
-            <Route path="/" element={<ProductList />} />
+            <Route path="/" element={<Home />} />
             <Route path="/products" element={<ProductList />} />
             <Route path="/products/:id" element={<SingleProduct />} />
             <Route path="/login" element={<Login />} />
@@ -104,17 +105,16 @@ function App() {
             />
 
             <Route
-              path="/admin/orders"
+              path="/admin/users"
               element={
                 <PrivateRoute requiredRole="admin">
-                  <AdminOrders />
+                  <AdminUsers />
                 </PrivateRoute>
               }
             />
           </Routes>
         </Router>
-      </CartProvider>
-    </AuthProvider>
+    </Provider>
   );
 }
 
