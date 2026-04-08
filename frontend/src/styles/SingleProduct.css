@@ -1,4 +1,4 @@
-/* Koi Fish E-commerce Single Product - Modern Black, White, Green Theme */
+
 :root {
   --primary-black: #000000;
   --primary-white: #ffffff;
@@ -131,17 +131,17 @@
 .size-options,
 .color-options {
   display: flex;
-  color:black;
   gap: 15px;
   flex-wrap: wrap;
 }
 
 .size-btn,
 .color-btn {
-  background: transparent;
+background: var(--primary-white);
   border: 2px solid var(--primary-black);
   padding: 12px 24px;
   border-radius: 25px;
+  color: var(--primary-black);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -151,7 +151,7 @@
 
 .size-btn:hover,
 .color-btn:hover {
-  background: var(--light-gray);
+  background: var(--light-gray); 
 }
 
 .size-btn.selected,
