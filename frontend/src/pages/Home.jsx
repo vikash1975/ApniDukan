@@ -54,7 +54,6 @@ function Home() {
             <a href="#categories" className="hero-cta secondary" onClick={(e) => { e.preventDefault(); document.getElementById('categories').scrollIntoView({ behavior: 'smooth' }); }}>Browse Categories</a>
           </div>
         </div>
-        
       </section>
 
       {/* Featured Products */}

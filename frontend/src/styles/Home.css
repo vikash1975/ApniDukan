@@ -32,12 +32,13 @@ body {
 .hero-section {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   padding: 120px 40px 80px;
   max-width: 1400px;
   margin: 0 auto;
   background: var(--primary-white);
   position: relative;
+  text-align: center;
 }
 
 .hero-content {
