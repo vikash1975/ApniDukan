@@ -131,6 +131,7 @@
 .size-options,
 .color-options {
   display: flex;
+  color:black;
   gap: 15px;
   flex-wrap: wrap;
 }
