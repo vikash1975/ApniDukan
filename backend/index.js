@@ -27,10 +27,14 @@ const corsOptions = {
     'https://apnidukan-frontend.onrender.com', // Your actual frontend URL
   ],
   credentials: true,
-  optionsSuccessStatus: 200
+  optionsSuccessStatus: 200,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 };
 
-app.use(cors(corsOptions));
+// Temporary fix for testing - allow all origins (remove in production)
+app.use(cors()); // Uncommented this line for immediate testing
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
